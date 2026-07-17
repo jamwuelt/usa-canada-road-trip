@@ -3,455 +3,585 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USA & Canada Road Trip 2026</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <title>USA & Canada Road Trip</title>
     <style>
+        :root {
+            --sea: #e8f4f8;
+            --sea-deep: #a8d5e0;
+            --sand: #f5e6d3;
+            --ink: #2c3e2f;
+            --ink-soft: #5a6b62;
+            --paper: #faf8f5;
+            --coral: #e67e50;
+            --coral-soft: #f5c8b8;
+            --teal: #2b8a84;
+            --teal-soft: #c8e5e3;
+            --plum: #7d5a7d;
+            --plum-soft: #e5d5e5;
+            --gold: #b8935f;
+            --gold-soft: #e8dcc8;
+            --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "Segoe UI Rounded", "Helvetica Neue", sans-serif;
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+        }
+
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
         }
 
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: #f5f5f5;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+            background: linear-gradient(180deg, var(--sea) 0%, var(--sea) 320px, var(--paper) 320px);
+            color: var(--ink);
+            font-family: var(--font-body);
+            -webkit-font-smoothing: antialiased;
         }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            width: 100%;
+        .page {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 0 0 48px;
         }
 
-        .sidebar {
-            flex: 1;
-            background: white;
-            overflow-y: auto;
-            padding: 20px 16px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .map-container {
-            height: 280px;
-            position: relative;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        #map {
-            width: 100%;
-            height: 100%;
-        }
-
-        .header {
-            margin-bottom: 16px;
+        .masthead {
+            padding: 28px 20px 18px;
             text-align: center;
         }
 
-        .header h1 {
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 4px;
+        .eyebrow {
+            margin: 0 0 6px;
+            font-family: var(--font-display);
+            font-size: 12.5px;
             font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
         }
 
-        .header p {
-            color: #999;
-            font-size: 12px;
+        h1 {
+            margin: 0 0 8px;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: clamp(26px, 6vw, 34px);
+            letter-spacing: -0.01em;
+            color: var(--ink);
         }
 
-        .trip-summary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            color: white;
-            font-size: 12px;
-            line-height: 1.6;
+        .sub {
+            margin: 0;
+            font-size: 14.5px;
+            color: var(--ink-soft);
         }
 
-        .trip-summary strong {
-            display: block;
+        .day-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 6px 16px 14px;
+            overflow-x: auto;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            background: var(--sea);
+            scrollbar-width: none;
+        }
+
+        .day-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            flex: 0 0 auto;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            border-radius: 999px;
+            padding: 9px 16px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.55);
+            color: var(--ink);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.25;
+            transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+        }
+
+        .tab span {
+            font-size: 10.5px;
             font-weight: 600;
-            margin-bottom: 2px;
+            opacity: 0.75;
+            font-family: var(--font-body);
         }
 
-        .stops-list {
+        .tab.is-active {
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .tab.is-active {
+            background: var(--coral);
+        }
+
+        .map-wrap {
+            padding: 4px 12px 8px;
+        }
+
+        .map-card {
+            background: var(--sea);
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05) inset;
+        }
+
+        svg {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .timeline {
+            padding: 18px 16px 4px;
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
-        .stop {
-            background: #fafafa;
-            border: 1px solid #e8e8e8;
-            border-radius: 8px;
-            padding: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .stop:active {
-            background: #f0f0f0;
-        }
-
-        .stop.active {
-            background: #f0f4ff;
-            border-color: #667eea;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
-        }
-
-        .stop-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #667eea;
-            position: absolute;
-            left: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .stop.active .stop-indicator {
-            background: #764ba2;
-            box-shadow: 0 0 6px rgba(118, 75, 162, 0.4);
-        }
-
-        .stop-content {
-            margin-left: 16px;
-        }
-
-        .stop-date {
-            color: #667eea;
-            font-weight: 600;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 2px;
-        }
-
-        .stop-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 4px;
-        }
-
-        .stop-location {
-            color: #666;
-            font-size: 12px;
-            margin-bottom: 6px;
-        }
-
-        .stop-image {
-            width: 100%;
-            height: 80px;
-            background: #e8e8e8;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            object-fit: cover;
+        .day-panel {
             display: none;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        .stop.active .stop-image {
-            display: block;
+        .day-panel.is-active {
+            display: flex;
         }
 
-        .stop-hotel {
-            background: white;
-            padding: 8px;
-            border-radius: 4px;
-            margin-bottom: 6px;
-            font-size: 11px;
-            border-left: 3px solid #667eea;
+        .stop {
+            background: #fff;
+            border-radius: 16px;
+            padding: 12px 14px;
+            cursor: pointer;
+            display: grid;
+            grid-template-columns: 64px 1fr auto;
+            gap: 12px;
+            align-items: start;
+            border: 1px solid rgba(40, 54, 47, 0.08);
+            transition: all 0.2s ease;
         }
 
-        .stop-hotel strong {
-            display: block;
-            color: #333;
-            margin-bottom: 2px;
+        .stop:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .stop-description {
-            font-size: 12px;
-            color: #555;
-            line-height: 1.4;
-            margin-bottom: 6px;
+        .stop time {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--ink);
+            line-height: 1.35;
         }
 
-        .stop-distance {
-            font-size: 11px;
-            color: #999;
-            background: #f5f5f5;
-            padding: 6px 8px;
-            border-radius: 4px;
+        .stop-body h3 {
+            margin: 0 0 3px;
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
         }
 
-        /* Scrollbar styling */
-        .sidebar::-webkit-scrollbar {
-            width: 6px;
+        .stop-body p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--ink-soft);
+            line-height: 1.5;
         }
 
-        .sidebar::-webkit-scrollbar-track {
-            background: #f1f1f1;
+        .check-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid rgba(40, 54, 47, 0.25);
+            background: #fff;
+            cursor: pointer;
+            flex: 0 0 auto;
+            align-self: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            color: transparent;
+            font-size: 14px;
+            line-height: 1;
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
         }
 
-        .sidebar::-webkit-scrollbar-thumb {
-            background: #ddd;
-            border-radius: 3px;
+        .stop.is-done {
+            opacity: 0.45;
         }
 
-        .sidebar::-webkit-scrollbar-thumb:active {
-            background: #999;
+        .stop.is-done .check-btn {
+            background: var(--teal);
+            border-color: var(--teal);
+            color: #fff;
         }
 
-        /* Desktop view */
-        @media (min-width: 768px) {
-            body {
-                flex-direction: row;
+        /* Bottom sheet */
+        .sheet-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(40, 54, 47, 0.45);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 20;
+        }
+
+        .sheet-backdrop.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sheet {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-width: 760px;
+            margin: 0 auto;
+            background: var(--paper);
+            border-radius: 20px 20px 0 0;
+            padding: 6px 20px 24px;
+            transform: translateY(100%);
+            transition: transform 0.25s ease;
+            z-index: 21;
+            max-height: 78vh;
+            overflow-y: auto;
+            box-shadow: 0 -10px 28px rgba(40, 54, 47, 0.2);
+        }
+
+        .sheet.is-open {
+            transform: translateY(0);
+        }
+
+        .sheet-grabber {
+            width: 36px;
+            height: 4px;
+            background: var(--sand);
+            border-radius: 99px;
+            margin: 10px auto 6px;
+        }
+
+        .sheet-close {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(40, 54, 47, 0.08);
+            color: var(--ink);
+            font-size: 19px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .sheet-inner {
+            display: flex;
+            gap: 14px;
+            padding-top: 10px;
+        }
+
+        .sheet-accent {
+            width: 5px;
+            border-radius: 99px;
+            flex: 0 0 auto;
+            background: var(--coral);
+        }
+
+        .sheet-content {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .sheet-time {
+            margin: 0 0 2px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--ink-soft);
+        }
+
+        .sheet-title {
+            margin: 0 0 8px;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 19px;
+        }
+
+        .sheet-note {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--ink);
+        }
+
+        .sheet-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .sheet-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 15px;
+            border-radius: 12px;
+            background: #fff;
+            border: 1px solid rgba(40, 54, 47, 0.15);
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--ink);
+            cursor: pointer;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .tab, .sheet, .sheet-backdrop {
+                transition: none;
             }
-
-            .sidebar {
-                width: 400px;
-                border-bottom: none;
-                border-right: 1px solid #e0e0e0;
-                padding: 24px 20px;
-            }
-
-            .map-container {
-                flex: 1;
-                height: auto;
-                border-top: none;
-            }
-
-            .stop-image {
-                display: block !important;
-            }
-        }
-
-        /* Loading indicator */
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #999;
-            font-size: 12px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="sidebar">
-            <div class="header">
-                <h1>🚗 Road Trip 2026</h1>
-                <p>USA & Canada Adventure</p>
-            </div>
+    <div class="page">
+        <header class="masthead">
+            <p class="eyebrow">USA & Canada · Aug 3-10, 2026</p>
+            <h1>Road Trip Adventure</h1>
+            <p class="sub">Interactive route & hotel guide · 1,800+ miles · I-80</p>
+        </header>
 
-            <div class="trip-summary">
-                <strong>📍 Vernon Hill, IL</strong>
-                Aug 3-10 | ~1,800 miles<br>
-                Route: Interstate 80
-            </div>
+        <nav class="day-tabs" role="tablist">
+            <button class="tab is-active" data-day="1" role="tab" aria-selected="true">Day 1<span>8/3 Sun</span></button>
+            <button class="tab" data-day="2" role="tab">Day 2<span>8/4 Mon</span></button>
+            <button class="tab" data-day="3" role="tab">Day 3<span>8/5 Tue</span></button>
+            <button class="tab" data-day="4" role="tab">Day 4<span>8/6 Wed</span></button>
+            <button class="tab" data-day="5" role="tab">Day 5<span>8/7 Thu</span></button>
+            <button class="tab" data-day="6" role="tab">Day 6<span>8/8 Fri</span></button>
+            <button class="tab" data-day="7" role="tab">Day 7<span>8/9 Sat</span></button>
+            <button class="tab" data-day="8" role="tab">Day 8<span>8/10 Sun</span></button>
+        </nav>
 
-            <div class="stops-list" id="stops-container">
-                <div class="loading">Loading stops...</div>
+        <div class="map-wrap">
+            <div class="map-card">
+                <svg viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Simplified USA-Canada route map -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#e67e50" />
+                        </marker>
+                    </defs>
+                    
+                    <!-- Route line -->
+                    <path d="M 100 400 L 300 300 L 450 250 L 500 200 L 550 250 L 600 300 L 700 350" 
+                          stroke="#b8935f" stroke-width="3" fill="none" stroke-dasharray="5,5" opacity="0.5"/>
+                    
+                    <!-- Stop markers -->
+                    <circle cx="100" cy="400" r="12" fill="#e67e50" stroke="#fff" stroke-width="2"/>
+                    <circle cx="300" cy="300" r="12" fill="#2b8a84" stroke="#fff" stroke-width="2"/>
+                    <circle cx="450" cy="250" r="12" fill="#2b8a84" stroke="#fff" stroke-width="2"/>
+                    <circle cx="500" cy="200" r="12" fill="#2b8a84" stroke="#fff" stroke-width="2"/>
+                    <circle cx="550" cy="250" r="12" fill="#7d5a7d" stroke="#fff" stroke-width="2"/>
+                    <circle cx="600" cy="300" r="12" fill="#7d5a7d" stroke="#fff" stroke-width="2"/>
+                    <circle cx="700" cy="350" r="12" fill="#b8935f" stroke="#fff" stroke-width="2"/>
+                    
+                    <!-- Labels -->
+                    <text x="100" y="430" text-anchor="middle" font-size="11" fill="#5a6b62" font-weight="600">Vernon Hill</text>
+                    <text x="300" y="330" text-anchor="middle" font-size="11" fill="#5a6b62" font-weight="600">Hazleton, PA</text>
+                    <text x="450" y="280" text-anchor="middle" font-size="11" fill="#5a6b62" font-weight="600">NYC</text>
+                    <text x="500" y="230" text-anchor="middle" font-size="11" fill="#5a6b62" font-weight="600">Ithaca</text>
+                    <text x="550" y="280" text-anchor="middle" font-size="11" fill="#5a6b62" font-weight="600">Niagara Falls</text>
+                    <text x="600" y="330" text-anchor="middle" font-size="11" fill="#5a6b62" font-weight="600">London, ON</text>
+                    <text x="700" y="380" text-anchor="middle" font-size="11" fill="#5a6b62" font-weight="600">Return</text>
+                </svg>
             </div>
         </div>
 
-        <div class="map-container">
-            <div id="map"></div>
+        <section class="timeline" id="timeline">
+            <div class="day-panel is-active" data-panel="1"></div>
+            <div class="day-panel" data-panel="2"></div>
+            <div class="day-panel" data-panel="3"></div>
+            <div class="day-panel" data-panel="4"></div>
+            <div class="day-panel" data-panel="5"></div>
+            <div class="day-panel" data-panel="6"></div>
+            <div class="day-panel" data-panel="7"></div>
+            <div class="day-panel" data-panel="8"></div>
+        </section>
+    </div>
+
+    <div class="sheet-backdrop" id="sheetBackdrop"></div>
+    <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="sheet-grabber"></div>
+        <button class="sheet-close" id="sheetClose">×</button>
+        <div class="sheet-inner">
+            <div class="sheet-accent"></div>
+            <div class="sheet-content">
+                <p class="sheet-time" id="sheetTime"></p>
+                <h3 class="sheet-title" id="sheetTitle"></h3>
+                <p class="sheet-note" id="sheetNote"></p>
+                <div class="sheet-actions" id="sheetActions"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Trip data
-        const tripData = [
-            {
-                id: 1,
-                date: "Aug 3",
-                title: "Starting Point",
-                location: "Vernon Hill, IL",
-                hotel: "Begin your adventure",
-                description: "Depart from the Midwest and head east through scenic landscapes.",
-                image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&h=250&fit=crop",
-                lat: 42.0711,
-                lng: -87.8518,
-                distance: "Start"
-            },
-            {
-                id: 2,
-                date: "Aug 3",
-                title: "Holiday Inn Express",
-                location: "Hazleton, PA",
-                hotel: "Holiday Inn Express Drum-Hazleton",
-                description: "First overnight stop in Pennsylvania. Rest and recharge before NYC.",
-                image: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=250&fit=crop",
-                lat: 40.9506,
-                lng: -75.7453,
-                distance: "550 miles"
-            },
-            {
-                id: 3,
-                date: "Aug 4-6",
-                title: "Lotte Palace",
-                location: "NYC - Midtown Manhattan",
-                hotel: "Lotte Palace Hotel",
-                description: "3 nights in the Big Apple! Explore Times Square, Central Park, Statue of Liberty, and iconic NYC landmarks.",
-                image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400&h=250&fit=crop",
-                lat: 40.7580,
-                lng: -73.9855,
-                distance: "200 miles"
-            },
-            {
-                id: 4,
-                date: "Aug 7",
-                title: "Stater Hotel",
-                location: "Ithaca, NY - Cornell",
-                hotel: "Stater Hotel at Cornell University",
-                description: "Journey to upstate New York. Explore beautiful Cornell campus and Ithaca's stunning gorges and waterfalls.",
-                image: "https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?w=400&h=250&fit=crop",
-                lat: 42.4534,
-                lng: -76.4735,
-                distance: "250 miles"
-            },
-            {
-                id: 5,
-                date: "Aug 8",
-                title: "Sheraton Fallsview",
-                location: "Niagara Falls, ON",
-                hotel: "Sheraton Fallsview Hotel",
-                description: "Cross into Canada! Experience the majestic Niagara Falls with spectacular views and adventure activities.",
-                image: "https://images.unsplash.com/photo-1532274040911-5f82f1d0c18c?w=400&h=250&fit=crop",
-                lat: 43.0896,
-                lng: -79.0849,
-                distance: "70 miles"
-            },
-            {
-                id: 6,
-                date: "Aug 9",
-                title: "TownePlace Suites",
-                location: "London, Ontario",
-                hotel: "TownePlace Suites by Marriott",
-                description: "Continue west through Ontario. Explore the charming city of London and prepare for the return journey.",
-                image: "https://images.unsplash.com/photo-1519456590522-46c69acd42fe?w=400&h=250&fit=crop",
-                lat: 42.9849,
-                lng: -81.2453,
-                distance: "150 miles"
-            },
-            {
-                id: 7,
-                date: "Aug 10",
-                title: "Return Home",
-                location: "Vernon Hill, IL",
-                hotel: "Complete the circle",
-                description: "Drive back to Illinois, completing your epic USA & Canada adventure with memories to last a lifetime!",
-                image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=400&h=250&fit=crop",
-                lat: 42.0711,
-                lng: -87.8518,
-                distance: "1,000 miles"
-            }
-        ];
-
-        // Initialize map
-        const map = L.map('map').setView([41.5, -78], 5);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap',
-            maxZoom: 19
-        }).addTo(map);
-
-        // Draw route
-        const routeCoordinates = tripData.map(stop => [stop.lat, stop.lng]);
-        L.polyline(routeCoordinates, {
-            color: '#764ba2',
-            weight: 2,
-            opacity: 0.6
-        }).addTo(map);
-
-        // Add markers
-        const markers = {};
-        tripData.forEach((stop) => {
-            const marker = L.circleMarker([stop.lat, stop.lng], {
-                radius: 6,
-                fillColor: '#667eea',
-                color: '#fff',
-                weight: 2,
-                opacity: 1,
-                fillOpacity: 0.8
-            }).addTo(map);
-
-            markers[stop.id] = marker;
-
-            marker.on('click', () => {
-                highlightStop(stop.id);
-            });
-        });
-
-        // Render stops in sidebar
-        const stopsContainer = document.getElementById('stops-container');
-        stopsContainer.innerHTML = '';
-
-        tripData.forEach(stop => {
-            const stopEl = document.createElement('div');
-            stopEl.className = 'stop';
-            stopEl.id = `stop-${stop.id}`;
+        const STOPS = {
+            'd1-start': { day: '1', title: 'Vernon Hill', location: 'IL - Start', time: '08:00', note: 'Begin your epic USA & Canada adventure!' },
+            'd1-hazleton': { day: '1', title: 'Holiday Inn Express', location: 'Hazleton, PA 18222', time: '17:00', note: 'First overnight stop. Rest before NYC!' },
             
-            stopEl.innerHTML = `
-                <div class="stop-indicator"></div>
-                <div class="stop-content">
-                    <div class="stop-date">${stop.date}</div>
-                    <div class="stop-title">${stop.title}</div>
-                    <div class="stop-location">📍 ${stop.location}</div>
-                    <img src="${stop.image}" alt="${stop.title}" class="stop-image">
-                    <div class="stop-hotel">
-                        <strong>${stop.hotel}</strong>
-                    </div>
-                    <div class="stop-description">${stop.description}</div>
-                    <div class="stop-distance">📏 ${stop.distance}</div>
+            'd2-drive-nyc': { day: '2', title: 'Drive to NYC', location: 'Pennsylvania → New York', time: '08:00-17:00', note: 'Cross into New York State' },
+            'd2-lotte': { day: '2', title: 'Lotte Palace Hotel', location: 'NYC - Midtown Manhattan', time: '18:00', note: 'Arrive at Lotte Palace. Explore Times Square, Central Park, and iconic NYC landmarks.' },
+            
+            'd3-nyc': { day: '3', title: 'NYC Exploration', location: 'New York City', time: 'All Day', note: 'Continue exploring NYC. Visit Statue of Liberty, Brooklyn Bridge, museums.' },
+            'd3-lotte-night': { day: '3', title: 'Lotte Palace', location: 'Midtown Manhattan', time: 'Evening', note: 'Another night in NYC' },
+            
+            'd4-nyc-ithaca': { day: '4', title: 'NYC to Ithaca', location: 'New York', time: '08:00-16:00', note: 'Drive north to Cornell University' },
+            'd4-stater': { day: '4', title: 'Stater Hotel', location: 'Ithaca, NY - Cornell', time: '17:00', note: 'Arrive at Stater Hotel. Explore beautiful Cornell campus and Ithaca gorges.' },
+            
+            'd5-cornell': { day: '5', title: 'Cornell & Ithaca', location: 'Ithaca, NY', time: 'All Day', note: 'Explore waterfalls, gorges, and scenic views around Ithaca.' },
+            'd5-stater-night': { day: '5', title: 'Stater Hotel', location: 'Cornell', time: 'Evening', note: 'Another night at Cornell' },
+            
+            'd6-ithaca-niagara': { day: '6', title: 'To Niagara Falls', location: 'New York → Canada', time: '08:00-15:00', note: 'Drive to the iconic Niagara Falls' },
+            'd6-sheraton': { day: '6', title: 'Sheraton Fallsview', location: 'Niagara Falls, ON', time: '16:00', note: 'Spectacular views of Niagara Falls. Marvel at the natural wonder!' },
+            
+            'd7-niagara-london': { day: '7', title: 'To London, Ontario', location: 'Canada', time: '08:00-14:00', note: 'Drive west through Ontario' },
+            'd7-townplace': { day: '7', title: 'TownePlace Suites', location: 'London, Ontario', time: '15:00', note: 'Arrive in London. Explore charming Ontario city.' },
+            
+            'd8-return': { day: '8', title: 'Return Home', location: 'London, ON → Vernon Hill', time: '08:00', note: 'Begin the drive back to Illinois, completing your epic adventure!' }
+        };
+
+        const DAY_ORDER = {
+            '1': ['d1-start', 'd1-hazleton'],
+            '2': ['d2-drive-nyc', 'd2-lotte'],
+            '3': ['d3-nyc', 'd3-lotte-night'],
+            '4': ['d4-nyc-ithaca', 'd4-stater'],
+            '5': ['d5-cornell', 'd5-stater-night'],
+            '6': ['d6-ithaca-niagara', 'd6-sheraton'],
+            '7': ['d7-niagara-london', 'd7-townplace'],
+            '8': ['d8-return']
+        };
+
+        let currentDay = '1';
+        let lastFocused = null;
+        const sheetEl = document.getElementById('sheet');
+        const backdropEl = document.getElementById('sheetBackdrop');
+        const doneSet = {};
+
+        function buildStopCard(id) {
+            const s = STOPS[id];
+            if (!s) return null;
+            const el = document.createElement('div');
+            el.className = 'stop';
+            el.tabIndex = 0;
+            el.setAttribute('role', 'button');
+            el.innerHTML = `
+                <time>${s.time}</time>
+                <div class="stop-body">
+                    <h3>${s.title}</h3>
+                    <p>${s.location}</p>
                 </div>
             `;
-
-            stopEl.addEventListener('click', () => {
-                highlightStop(stop.id);
-                map.setView([stop.lat, stop.lng], 9);
+            
+            const chk = document.createElement('button');
+            chk.className = 'check-btn';
+            chk.type = 'button';
+            chk.setAttribute('aria-label', 'Mark complete');
+            chk.textContent = '✓';
+            chk.addEventListener('click', (e) => {
+                e.stopPropagation();
+                el.classList.toggle('is-done');
+                doneSet[id] = !doneSet[id];
             });
-
-            stopsContainer.appendChild(stopEl);
-        });
-
-        // Highlight function
-        function highlightStop(stopId) {
-            document.querySelectorAll('.stop').forEach(el => {
-                el.classList.remove('active');
+            el.appendChild(chk);
+            
+            el.addEventListener('click', () => openStopCard(id, el));
+            el.addEventListener('keydown', (e) => {
+                if ((e.key === 'Enter' || e.key === ' ') && e.target === el) {
+                    e.preventDefault();
+                    openStopCard(id, el);
+                }
             });
-            document.getElementById(`stop-${stopId}`).classList.add('active');
-
-            Object.values(markers).forEach(marker => {
-                marker.setRadius(6);
-                marker.setStyle({ fillColor: '#667eea' });
-            });
-
-            if (markers[stopId]) {
-                markers[stopId].setRadius(10);
-                markers[stopId].setStyle({ fillColor: '#764ba2' });
-            }
-
-            // Scroll to active stop on mobile
-            const activeStop = document.getElementById(`stop-${stopId}`);
-            if (activeStop && window.innerWidth < 768) {
-                setTimeout(() => {
-                    activeStop.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }, 100);
-            }
+            return el;
         }
 
-        // Auto-highlight first stop
-        highlightStop(1);
+        function renderTimeline() {
+            Object.keys(DAY_ORDER).forEach((day) => {
+                const panel = document.querySelector(`.day-panel[data-panel="${day}"]`);
+                if (!panel) return;
+                panel.innerHTML = '';
+                DAY_ORDER[day].forEach((id) => {
+                    const card = buildStopCard(id);
+                    if (card) panel.appendChild(card);
+                });
+            });
+        }
+
+        function openStopCard(id, triggerEl) {
+            const s = STOPS[id];
+            if (!s) return;
+            lastFocused = triggerEl || document.activeElement;
+            
+            document.getElementById('sheetTime').textContent = s.time || '';
+            document.getElementById('sheetTitle').textContent = s.title;
+            document.getElementById('sheetNote').innerHTML = s.note || '';
+            
+            sheetEl.classList.add('is-open');
+            backdropEl.classList.add('is-open');
+            sheetEl.setAttribute('aria-hidden', 'false');
+            document.getElementById('sheetClose').focus();
+        }
+
+        function closeStopCard() {
+            sheetEl.classList.remove('is-open');
+            backdropEl.classList.remove('is-open');
+            sheetEl.setAttribute('aria-hidden', 'true');
+            if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+        }
+
+        function setDay(day) {
+            currentDay = day;
+            document.querySelectorAll('.tab').forEach((t) => {
+                const active = t.getAttribute('data-day') === day;
+                t.classList.toggle('is-active', active);
+                t.setAttribute('aria-selected', active ? 'true' : 'false');
+            });
+            document.querySelectorAll('.day-panel').forEach((p) => {
+                p.classList.toggle('is-active', p.getAttribute('data-panel') === day);
+            });
+        }
+
+        // Event listeners
+        document.querySelectorAll('.tab').forEach((t) => {
+            t.addEventListener('click', () => setDay(t.getAttribute('data-day')));
+        });
+
+        backdropEl.addEventListener('click', closeStopCard);
+        document.getElementById('sheetClose').addEventListener('click', closeStopCard);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeStopCard();
+        });
+
+        // Initialize
+        renderTimeline();
+        setDay('1');
     </script>
 </body>
 </html>
