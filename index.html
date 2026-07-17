@@ -1,27 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USA & Canada Road Trip</title>
+    <title>美國加拿大自駕遊</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <style>
         :root {
             --sea: #e8f4f8;
             --sea-deep: #a8d5e0;
             --sand: #f5e6d3;
-            --ink: #2c3e2f;
+            --ink: #1a1a2e;
             --ink-soft: #5a6b62;
             --paper: #faf8f5;
-            --coral: #e67e50;
-            --coral-soft: #f5c8b8;
-            --teal: #2b8a84;
-            --teal-soft: #c8e5e3;
-            --plum: #7d5a7d;
-            --plum-soft: #e5d5e5;
-            --gold: #b8935f;
-            --gold-soft: #e8dcc8;
-            --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "Segoe UI Rounded", "Helvetica Neue", sans-serif;
-            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+            --red: #c41e3a;
+            --red-soft: #f5c8b8;
+            --blue: #002868;
+            --blue-soft: #c8e5e3;
+            --white: #ffffff;
+            --gray: #f0f0f0;
+            --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "Segoe UI Rounded", "Helvetica Neue", "PingFang TC", "Microsoft JhengHei", sans-serif;
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
         }
 
         * {
@@ -60,7 +60,7 @@
             font-weight: 700;
             letter-spacing: 0.14em;
             text-transform: uppercase;
-            color: var(--ink-soft);
+            color: var(--red);
         }
 
         h1 {
@@ -69,7 +69,7 @@
             font-weight: 800;
             font-size: clamp(26px, 6vw, 34px);
             letter-spacing: -0.01em;
-            color: var(--ink);
+            color: var(--blue);
         }
 
         .sub {
@@ -122,10 +122,7 @@
         .tab.is-active {
             color: #fff;
             transform: translateY(-1px);
-        }
-
-        .tab.is-active {
-            background: var(--coral);
+            background: var(--red);
         }
 
         .map-wrap {
@@ -137,12 +134,13 @@
             border-radius: 22px;
             overflow: hidden;
             box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05) inset;
+            height: 300px;
         }
 
-        svg {
-            display: block;
+        #map {
             width: 100%;
-            height: auto;
+            height: 100%;
+            border-radius: 22px;
         }
 
         .timeline {
@@ -171,19 +169,20 @@
             grid-template-columns: 64px 1fr auto;
             gap: 12px;
             align-items: start;
-            border: 1px solid rgba(40, 54, 47, 0.08);
+            border: 1px solid rgba(20, 30, 48, 0.08);
             transition: all 0.2s ease;
         }
 
         .stop:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.1);
+            border-color: var(--red);
         }
 
         .stop time {
             font-family: var(--font-display);
             font-weight: 700;
             font-size: 13px;
-            color: var(--ink);
+            color: var(--blue);
             line-height: 1.35;
         }
 
@@ -192,6 +191,7 @@
             font-family: var(--font-display);
             font-size: 15px;
             font-weight: 700;
+            color: var(--ink);
         }
 
         .stop-body p {
@@ -205,7 +205,7 @@
             width: 26px;
             height: 26px;
             border-radius: 50%;
-            border: 2px solid rgba(40, 54, 47, 0.25);
+            border: 2px solid rgba(20, 30, 48, 0.25);
             background: #fff;
             cursor: pointer;
             flex: 0 0 auto;
@@ -225,8 +225,8 @@
         }
 
         .stop.is-done .check-btn {
-            background: var(--teal);
-            border-color: var(--teal);
+            background: var(--blue);
+            border-color: var(--blue);
             color: #fff;
         }
 
@@ -234,7 +234,7 @@
         .sheet-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(40, 54, 47, 0.45);
+            background: rgba(20, 30, 48, 0.45);
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s ease;
@@ -261,7 +261,7 @@
             z-index: 21;
             max-height: 78vh;
             overflow-y: auto;
-            box-shadow: 0 -10px 28px rgba(40, 54, 47, 0.2);
+            box-shadow: 0 -10px 28px rgba(20, 30, 48, 0.2);
         }
 
         .sheet.is-open {
@@ -271,7 +271,7 @@
         .sheet-grabber {
             width: 36px;
             height: 4px;
-            background: var(--sand);
+            background: #ddd;
             border-radius: 99px;
             margin: 10px auto 6px;
         }
@@ -284,7 +284,7 @@
             height: 40px;
             border-radius: 50%;
             border: none;
-            background: rgba(40, 54, 47, 0.08);
+            background: rgba(20, 30, 48, 0.08);
             color: var(--ink);
             font-size: 19px;
             line-height: 1;
@@ -301,7 +301,7 @@
             width: 5px;
             border-radius: 99px;
             flex: 0 0 auto;
-            background: var(--coral);
+            background: var(--red);
         }
 
         .sheet-content {
@@ -314,7 +314,7 @@
             font-family: var(--font-display);
             font-weight: 700;
             font-size: 13px;
-            color: var(--ink-soft);
+            color: var(--blue);
         }
 
         .sheet-title {
@@ -322,6 +322,7 @@
             font-family: var(--font-display);
             font-weight: 800;
             font-size: 19px;
+            color: var(--ink);
         }
 
         .sheet-note {
@@ -345,13 +346,18 @@
             padding: 9px 15px;
             border-radius: 12px;
             background: #fff;
-            border: 1px solid rgba(40, 54, 47, 0.15);
+            border: 1px solid var(--red);
             text-decoration: none;
             font-family: var(--font-display);
             font-weight: 700;
             font-size: 13px;
-            color: var(--ink);
+            color: var(--red);
             cursor: pointer;
+        }
+
+        .sheet-btn:hover {
+            background: var(--red);
+            color: #fff;
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -364,54 +370,25 @@
 <body>
     <div class="page">
         <header class="masthead">
-            <p class="eyebrow">USA & Canada · Aug 3-10, 2026</p>
-            <h1>Road Trip Adventure</h1>
-            <p class="sub">Interactive route & hotel guide · 1,800+ miles · I-80</p>
+            <p class="eyebrow">美國 & 加拿大 · 2026年8月3-10日</p>
+            <h1>自駕遊冒險</h1>
+            <p class="sub">互動式路線和飯店指南 · 1,800+ 英里 · I-80 州際公路</p>
         </header>
 
         <nav class="day-tabs" role="tablist">
-            <button class="tab is-active" data-day="1" role="tab" aria-selected="true">Day 1<span>8/3 Sun</span></button>
-            <button class="tab" data-day="2" role="tab">Day 2<span>8/4 Mon</span></button>
-            <button class="tab" data-day="3" role="tab">Day 3<span>8/5 Tue</span></button>
-            <button class="tab" data-day="4" role="tab">Day 4<span>8/6 Wed</span></button>
-            <button class="tab" data-day="5" role="tab">Day 5<span>8/7 Thu</span></button>
-            <button class="tab" data-day="6" role="tab">Day 6<span>8/8 Fri</span></button>
-            <button class="tab" data-day="7" role="tab">Day 7<span>8/9 Sat</span></button>
-            <button class="tab" data-day="8" role="tab">Day 8<span>8/10 Sun</span></button>
+            <button class="tab is-active" data-day="1" role="tab" aria-selected="true">Day 1<span>8/3 週日</span></button>
+            <button class="tab" data-day="2" role="tab">Day 2<span>8/4 週一</span></button>
+            <button class="tab" data-day="3" role="tab">Day 3<span>8/5 週二</span></button>
+            <button class="tab" data-day="4" role="tab">Day 4<span>8/6 週三</span></button>
+            <button class="tab" data-day="5" role="tab">Day 5<span>8/7 週四</span></button>
+            <button class="tab" data-day="6" role="tab">Day 6<span>8/8 週五</span></button>
+            <button class="tab" data-day="7" role="tab">Day 7<span>8/9 週六</span></button>
+            <button class="tab" data-day="8" role="tab">Day 8<span>8/10 週日</span></button>
         </nav>
 
         <div class="map-wrap">
             <div class="map-card">
-                <svg viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Simplified USA-Canada route map -->
-                    <defs>
-                        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                            <polygon points="0 0, 10 3, 0 6" fill="#e67e50" />
-                        </marker>
-                    </defs>
-                    
-                    <!-- Route line -->
-                    <path d="M 100 400 L 300 300 L 450 250 L 500 200 L 550 250 L 600 300 L 700 350" 
-                          stroke="#b8935f" stroke-width="3" fill="none" stroke-dasharray="5,5" opacity="0.5"/>
-                    
-                    <!-- Stop markers -->
-                    <circle cx="100" cy="400" r="12" fill="#e67e50" stroke="#fff" stroke-width="2"/>
-                    <circle cx="300" cy="300" r="12" fill="#2b8a84" stroke="#fff" stroke-width="2"/>
-                    <circle cx="450" cy="250" r="12" fill="#2b8a84" stroke="#fff" stroke-width="2"/>
-                    <circle cx="500" cy="200" r="12" fill="#2b8a84" stroke="#fff" stroke-width="2"/>
-                    <circle cx="550" cy="250" r="12" fill="#7d5a7d" stroke="#fff" stroke-width="2"/>
-                    <circle cx="600" cy="300" r="12" fill="#7d5a7d" stroke="#fff" stroke-width="2"/>
-                    <circle cx="700" cy="350" r="12" fill="#b8935f" stroke="#fff" stroke-width="2"/>
-                    
-                    <!-- Labels -->
-                    <text x="100" y="430" text-anchor="middle" font-size="11" fill="#5a6b62" font-weight="600">Vernon Hill</text>
-                    <text x="300" y="330" text-anchor="middle" font-size="11" fill="#5a6b62" font-weight="600">Hazleton, PA</text>
-                    <text x="450" y="280" text-anchor="middle" font-size="11" fill="#5a6b62" font-weight="600">NYC</text>
-                    <text x="500" y="230" text-anchor="middle" font-size="11" fill="#5a6b62" font-weight="600">Ithaca</text>
-                    <text x="550" y="280" text-anchor="middle" font-size="11" fill="#5a6b62" font-weight="600">Niagara Falls</text>
-                    <text x="600" y="330" text-anchor="middle" font-size="11" fill="#5a6b62" font-weight="600">London, ON</text>
-                    <text x="700" y="380" text-anchor="middle" font-size="11" fill="#5a6b62" font-weight="600">Return</text>
-                </svg>
+                <div id="map"></div>
             </div>
         </div>
 
@@ -444,28 +421,28 @@
 
     <script>
         const STOPS = {
-            'd1-start': { day: '1', title: 'Vernon Hill', location: 'IL - Start', time: '08:00', note: 'Begin your epic USA & Canada adventure!' },
-            'd1-hazleton': { day: '1', title: 'Holiday Inn Express', location: 'Hazleton, PA 18222', time: '17:00', note: 'First overnight stop. Rest before NYC!' },
+            'd1-start': { day: '1', title: '威農山', location: '伊利諾州 (Vernon Hill, IL) - 出發點', time: '08:00', note: '開始你的美國和加拿大史詩級自駕遊冒險！' },
+            'd1-hazleton': { day: '1', title: '假日快捷酒店', location: '黑茲爾頓 (Hazleton, PA 18222)', time: '17:00', note: '第一夜停留。在賓州休息，為紐約做準備！' },
             
-            'd2-drive-nyc': { day: '2', title: 'Drive to NYC', location: 'Pennsylvania → New York', time: '08:00-17:00', note: 'Cross into New York State' },
-            'd2-lotte': { day: '2', title: 'Lotte Palace Hotel', location: 'NYC - Midtown Manhattan', time: '18:00', note: 'Arrive at Lotte Palace. Explore Times Square, Central Park, and iconic NYC landmarks.' },
+            'd2-drive-nyc': { day: '2', title: '前往紐約城', location: '賓州 → 紐約州 (Pennsylvania → New York)', time: '08:00-17:00', note: '進入紐約州，踏上大蘋果之旅' },
+            'd2-lotte': { day: '2', title: '樂天宮殿飯店', location: '紐約 (NYC - Midtown Manhattan)', time: '18:00', note: '抵達樂天宮殿飯店。探索時代廣場、中央公園和標誌性的紐約地標。' },
             
-            'd3-nyc': { day: '3', title: 'NYC Exploration', location: 'New York City', time: 'All Day', note: 'Continue exploring NYC. Visit Statue of Liberty, Brooklyn Bridge, museums.' },
-            'd3-lotte-night': { day: '3', title: 'Lotte Palace', location: 'Midtown Manhattan', time: 'Evening', note: 'Another night in NYC' },
+            'd3-nyc': { day: '3', title: '紐約城探險', location: '紐約市 (New York City)', time: '全天', note: '繼續探索紐約。造訪自由女神像、布魯克林橋、博物館等。' },
+            'd3-lotte-night': { day: '3', title: '樂天宮殿飯店', location: '中城曼哈頓 (Midtown Manhattan)', time: '晚上', note: '在紐約又一晚' },
             
-            'd4-nyc-ithaca': { day: '4', title: 'NYC to Ithaca', location: 'New York', time: '08:00-16:00', note: 'Drive north to Cornell University' },
-            'd4-stater': { day: '4', title: 'Stater Hotel', location: 'Ithaca, NY - Cornell', time: '17:00', note: 'Arrive at Stater Hotel. Explore beautiful Cornell campus and Ithaca gorges.' },
+            'd4-nyc-ithaca': { day: '4', title: '紐約到伊薩卡', location: '紐約州 (New York)', time: '08:00-16:00', note: '向北開車前往康奈爾大學' },
+            'd4-stater': { day: '4', title: '思泰特飯店', location: '伊薩卡 (Ithaca, NY - Cornell University)', time: '17:00', note: '抵達思泰特飯店。探索美麗的康奈爾校園和伊薩卡峽谷。' },
             
-            'd5-cornell': { day: '5', title: 'Cornell & Ithaca', location: 'Ithaca, NY', time: 'All Day', note: 'Explore waterfalls, gorges, and scenic views around Ithaca.' },
-            'd5-stater-night': { day: '5', title: 'Stater Hotel', location: 'Cornell', time: 'Evening', note: 'Another night at Cornell' },
+            'd5-cornell': { day: '5', title: '康奈爾和伊薩卡', location: '伊薩卡 (Ithaca, NY)', time: '全天', note: '探索瀑布、峽谷和伊薩卡周圍的風景秀麗景觀。' },
+            'd5-stater-night': { day: '5', title: '思泰特飯店', location: '康奈爾 (Cornell)', time: '晚上', note: '在康奈爾又一晚' },
             
-            'd6-ithaca-niagara': { day: '6', title: 'To Niagara Falls', location: 'New York → Canada', time: '08:00-15:00', note: 'Drive to the iconic Niagara Falls' },
-            'd6-sheraton': { day: '6', title: 'Sheraton Fallsview', location: 'Niagara Falls, ON', time: '16:00', note: 'Spectacular views of Niagara Falls. Marvel at the natural wonder!' },
+            'd6-ithaca-niagara': { day: '6', title: '前往尼亞加拉瀑布', location: '紐約州 → 加拿大 (New York → Canada)', time: '08:00-15:00', note: '開車前往標誌性的尼亞加拉瀑布' },
+            'd6-sheraton': { day: '6', title: '喜來登瀑布景觀飯店', location: '尼亞加拉瀑布 (Niagara Falls, ON)', time: '16:00', note: '欣賞尼亞加拉瀑布的壯觀景色。驚嘆於這個自然奇蹟！' },
             
-            'd7-niagara-london': { day: '7', title: 'To London, Ontario', location: 'Canada', time: '08:00-14:00', note: 'Drive west through Ontario' },
-            'd7-townplace': { day: '7', title: 'TownePlace Suites', location: 'London, Ontario', time: '15:00', note: 'Arrive in London. Explore charming Ontario city.' },
+            'd7-niagara-london': { day: '7', title: '前往倫敦安大略', location: '加拿大 (Canada)', time: '08:00-14:00', note: '向西開車穿過安大略省' },
+            'd7-townplace': { day: '7', title: '城鎮廣場套房飯店', location: '倫敦安大略 (London, Ontario)', time: '15:00', note: '抵達倫敦。探索魅力十足的安大略城市。' },
             
-            'd8-return': { day: '8', title: 'Return Home', location: 'London, ON → Vernon Hill', time: '08:00', note: 'Begin the drive back to Illinois, completing your epic adventure!' }
+            'd8-return': { day: '8', title: '返回家鄉', location: '倫敦安大略 → 威農山 (London, ON → Vernon Hill)', time: '08:00', note: '開始返回伊利諾州的旅程，完成你的史詩級冒險！' }
         };
 
         const DAY_ORDER = {
@@ -479,11 +456,77 @@
             '8': ['d8-return']
         };
 
+        const COORDINATES = {
+            'd1-start': [42.0711, -87.8518],
+            'd1-hazleton': [40.9506, -75.7453],
+            'd2-lotte': [40.7580, -73.9855],
+            'd4-stater': [42.4534, -76.4735],
+            'd6-sheraton': [43.0896, -79.0849],
+            'd7-townplace': [42.9849, -81.2453],
+            'd8-return': [42.0711, -87.8518]
+        };
+
         let currentDay = '1';
         let lastFocused = null;
         const sheetEl = document.getElementById('sheet');
         const backdropEl = document.getElementById('sheetBackdrop');
         const doneSet = {};
+        let map;
+        let markers = {};
+        let polyline;
+
+        // Initialize map
+        function initMap() {
+            map = L.map('map').setView([41.5, -78], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Draw route
+            const coords = [
+                [42.0711, -87.8518],  // Vernon Hill
+                [40.9506, -75.7453],  // Hazleton
+                [40.7580, -73.9855],  // NYC
+                [42.4534, -76.4735],  // Ithaca
+                [43.0896, -79.0849],  // Niagara Falls
+                [42.9849, -81.2453],  // London
+                [42.0711, -87.8518]   // Return
+            ];
+
+            polyline = L.polyline(coords, {
+                color: '#c41e3a',
+                weight: 3,
+                opacity: 0.7,
+                dashArray: '5, 5'
+            }).addTo(map);
+
+            // Add markers
+            const stopLocations = [
+                { coords: [42.0711, -87.8518], title: '威農山', color: '#c41e3a' },
+                { coords: [40.9506, -75.7453], title: '黑茲爾頓', color: '#002868' },
+                { coords: [40.7580, -73.9855], title: '紐約', color: '#002868' },
+                { coords: [42.4534, -76.4735], title: '伊薩卡', color: '#002868' },
+                { coords: [43.0896, -79.0849], title: '尼亞加拉瀑布', color: '#002868' },
+                { coords: [42.9849, -81.2453], title: '倫敦', color: '#002868' }
+            ];
+
+            stopLocations.forEach((stop, idx) => {
+                const marker = L.circleMarker(stop.coords, {
+                    radius: 8,
+                    fillColor: stop.color,
+                    color: '#fff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(map);
+
+                marker.bindPopup(`<strong>${stop.title}</strong>`);
+                marker.on('click', () => {
+                    map.setView(stop.coords, 9);
+                });
+            });
+        }
 
         function buildStopCard(id) {
             const s = STOPS[id];
@@ -503,7 +546,7 @@
             const chk = document.createElement('button');
             chk.className = 'check-btn';
             chk.type = 'button';
-            chk.setAttribute('aria-label', 'Mark complete');
+            chk.setAttribute('aria-label', '標記為完成');
             chk.textContent = '✓';
             chk.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -582,6 +625,7 @@
         // Initialize
         renderTimeline();
         setDay('1');
+        initMap();
     </script>
 </body>
 </html>
