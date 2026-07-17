@@ -6,37 +6,20 @@
     <title>美國加拿大自駕遊</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.umd.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <style>
         :root {
-            --sea: #e8f4f8;
-            --sea-deep: #a8d5e0;
-            --sand: #f5e6d3;
+            --red: #c41e3a;
+            --blue: #002868;
             --ink: #1a1a2e;
             --ink-soft: #5a6b62;
             --paper: #faf8f5;
-            --red: #c41e3a;
-            --red-soft: #f5c8b8;
-            --blue: #002868;
-            --blue-soft: #c8e5e3;
-            --white: #ffffff;
-            --gray: #f0f0f0;
-            --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "Segoe UI Rounded", "Helvetica Neue", "PingFang TC", "Microsoft JhengHei", sans-serif;
+            --sea: #e8f4f8;
+            --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", sans-serif;
             --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
         }
 
-        * {
-            box-sizing: border-box;
-        }
-
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-        }
-
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
         body {
             background: linear-gradient(180deg, var(--sea) 0%, var(--sea) 320px, var(--paper) 320px);
             color: var(--ink);
@@ -44,17 +27,8 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        .page {
-            max-width: 760px;
-            margin: 0 auto;
-            padding: 0 0 48px;
-        }
-
-        .masthead {
-            padding: 28px 20px 18px;
-            text-align: center;
-        }
-
+        .page { max-width: 760px; margin: 0 auto; padding: 0 0 48px; }
+        .masthead { padding: 28px 20px 18px; text-align: center; }
         .eyebrow {
             margin: 0 0 6px;
             font-family: var(--font-display);
@@ -70,15 +44,10 @@
             font-family: var(--font-display);
             font-weight: 800;
             font-size: clamp(26px, 6vw, 34px);
-            letter-spacing: -0.01em;
             color: var(--blue);
         }
 
-        .sub {
-            margin: 0;
-            font-size: 14.5px;
-            color: var(--ink-soft);
-        }
+        .sub { margin: 0; font-size: 14.5px; color: var(--ink-soft); }
 
         .day-tabs {
             display: flex;
@@ -92,9 +61,7 @@
             scrollbar-width: none;
         }
 
-        .day-tabs::-webkit-scrollbar {
-            display: none;
-        }
+        .day-tabs::-webkit-scrollbar { display: none; }
 
         .tab {
             flex: 0 0 auto;
@@ -111,43 +78,34 @@
             flex-direction: column;
             align-items: center;
             line-height: 1.25;
-            transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+            transition: background 0.15s ease;
         }
 
-        .tab span {
-            font-size: 10.5px;
-            font-weight: 600;
-            opacity: 0.75;
-            font-family: var(--font-body);
-        }
+        .tab span { font-size: 10.5px; font-weight: 600; opacity: 0.75; }
+        .tab.is-active { color: #fff; background: var(--red); }
 
-        .tab.is-active {
-            color: #fff;
-            transform: translateY(-1px);
-            background: var(--red);
-        }
-
-        .map-wrap {
-            padding: 4px 12px 8px;
-        }
-
+        .map-wrap { padding: 4px 12px 8px; }
         .map-card {
             background: var(--sea);
             border-radius: 22px;
             overflow: hidden;
             box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05) inset;
             height: 300px;
+            position: relative;
         }
 
-        #map {
-            width: 100%;
-            height: 100%;
+        .map-background {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.3;
+            z-index: 1;
             border-radius: 22px;
         }
 
-        .leaflet-routing-container {
-            display: none !important;
-        }
+        #map { width: 100%; height: 100%; border-radius: 22px; position: relative; z-index: 2; }
+        .leaflet-routing-container { display: none !important; }
 
         .timeline {
             padding: 18px 16px 4px;
@@ -156,15 +114,8 @@
             gap: 10px;
         }
 
-        .day-panel {
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .day-panel.is-active {
-            display: flex;
-        }
+        .day-panel { display: none; flex-direction: column; gap: 10px; }
+        .day-panel.is-active { display: flex; }
 
         .stop {
             background: #fff;
@@ -193,33 +144,10 @@
             font-weight: 600;
         }
 
-        .stop:hover {
-            box-shadow: 0 2px 8px rgba(196, 30, 58, 0.1);
-            border-color: var(--red);
-        }
-
-        .stop time {
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-size: 13px;
-            color: var(--blue);
-            line-height: 1.35;
-        }
-
-        .stop-body h3 {
-            margin: 0 0 3px;
-            font-family: var(--font-display);
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--ink);
-        }
-
-        .stop-body p {
-            margin: 0;
-            font-size: 13px;
-            color: var(--ink-soft);
-            line-height: 1.5;
-        }
+        .stop:hover { box-shadow: 0 2px 8px rgba(196, 30, 58, 0.1); border-color: var(--red); }
+        .stop time { font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--blue); line-height: 1.35; }
+        .stop-body h3 { margin: 0 0 3px; font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--ink); }
+        .stop-body p { margin: 0; font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
 
         .check-btn {
             width: 26px;
@@ -237,20 +165,12 @@
             color: transparent;
             font-size: 14px;
             line-height: 1;
-            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+            transition: all 0.15s ease;
         }
 
-        .stop.is-done {
-            opacity: 0.45;
-        }
+        .stop.is-done { opacity: 0.45; }
+        .stop.is-done .check-btn { background: var(--blue); border-color: var(--blue); color: #fff; }
 
-        .stop.is-done .check-btn {
-            background: var(--blue);
-            border-color: var(--blue);
-            color: #fff;
-        }
-
-        /* Bottom sheet */
         .sheet-backdrop {
             position: fixed;
             inset: 0;
@@ -261,16 +181,11 @@
             z-index: 20;
         }
 
-        .sheet-backdrop.is-open {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .sheet-backdrop.is-open { opacity: 1; pointer-events: auto; }
 
         .sheet {
             position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            left: 0; right: 0; bottom: 0;
             max-width: 760px;
             margin: 0 auto;
             background: var(--paper);
@@ -284,24 +199,12 @@
             box-shadow: 0 -10px 28px rgba(20, 30, 48, 0.2);
         }
 
-        .sheet.is-open {
-            transform: translateY(0);
-        }
-
-        .sheet-grabber {
-            width: 36px;
-            height: 4px;
-            background: #ddd;
-            border-radius: 99px;
-            margin: 10px auto 6px;
-        }
-
+        .sheet.is-open { transform: translateY(0); }
+        .sheet-grabber { width: 36px; height: 4px; background: #ddd; border-radius: 99px; margin: 10px auto 6px; }
         .sheet-close {
             position: absolute;
-            top: 10px;
-            right: 12px;
-            width: 40px;
-            height: 40px;
+            top: 10px; right: 12px;
+            width: 40px; height: 40px;
             border-radius: 50%;
             border: none;
             background: rgba(20, 30, 48, 0.08);
@@ -311,80 +214,13 @@
             cursor: pointer;
         }
 
-        .sheet-inner {
-            display: flex;
-            gap: 14px;
-            padding-top: 10px;
-        }
-
-        .sheet-accent {
-            width: 5px;
-            border-radius: 99px;
-            flex: 0 0 auto;
-            background: var(--red);
-        }
-
-        .sheet-content {
-            min-width: 0;
-            flex: 1;
-        }
-
-        .sheet-time {
-            margin: 0 0 2px;
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-size: 13px;
-            color: var(--blue);
-        }
-
-        .sheet-title {
-            margin: 0 0 8px;
-            font-family: var(--font-display);
-            font-weight: 800;
-            font-size: 19px;
-            color: var(--ink);
-        }
-
-        .sheet-note {
-            margin: 0;
-            font-size: 14px;
-            line-height: 1.6;
-            color: var(--ink);
-        }
-
-        .sheet-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 14px;
-        }
-
-        .sheet-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 9px 15px;
-            border-radius: 12px;
-            background: #fff;
-            border: 1px solid var(--red);
-            text-decoration: none;
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-size: 13px;
-            color: var(--red);
-            cursor: pointer;
-        }
-
-        .sheet-btn:hover {
-            background: var(--red);
-            color: #fff;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .tab, .sheet, .sheet-backdrop {
-                transition: none;
-            }
-        }
+        .sheet-inner { display: flex; gap: 14px; padding-top: 10px; }
+        .sheet-accent { width: 5px; border-radius: 99px; flex: 0 0 auto; background: var(--red); }
+        .sheet-content { min-width: 0; flex: 1; }
+        .sheet-time { margin: 0 0 2px; font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--blue); }
+        .sheet-title { margin: 0 0 8px; font-family: var(--font-display); font-weight: 800; font-size: 19px; color: var(--ink); }
+        .sheet-note { margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink); }
+        .sheet-cost { margin: 10px 0 0 0; padding-top: 10px; border-top: 1px solid #e0e0e0; font-size: 14px; font-weight: 600; color: var(--red); }
     </style>
 </head>
 <body>
@@ -392,22 +228,23 @@
         <header class="masthead">
             <p class="eyebrow">美國 & 加拿大 · 2026年8月3-10日</p>
             <h1>自駕遊冒險</h1>
-            <p class="sub">互動式路線和飯店指南 · 1,800+ 英里 · I-80 州際公路</p>
+            <p class="sub">互動式路線和飯店指南 · 1,800+ 英里</p>
         </header>
 
         <nav class="day-tabs" role="tablist">
-            <button class="tab is-active" data-day="1" role="tab" aria-selected="true">Day 1<span>8/3 週日</span></button>
-            <button class="tab" data-day="2" role="tab">Day 2<span>8/4 週一</span></button>
-            <button class="tab" data-day="3" role="tab">Day 3<span>8/5 週二</span></button>
-            <button class="tab" data-day="4" role="tab">Day 4<span>8/6 週三</span></button>
-            <button class="tab" data-day="5" role="tab">Day 5<span>8/7 週四</span></button>
-            <button class="tab" data-day="6" role="tab">Day 6<span>8/8 週五</span></button>
-            <button class="tab" data-day="7" role="tab">Day 7<span>8/9 週六</span></button>
-            <button class="tab" data-day="8" role="tab">Day 8<span>8/10 週日</span></button>
+            <button class="tab is-active" data-day="1" role="tab">Day 1<span>8/3</span></button>
+            <button class="tab" data-day="2" role="tab">Day 2<span>8/4</span></button>
+            <button class="tab" data-day="3" role="tab">Day 3<span>8/5</span></button>
+            <button class="tab" data-day="4" role="tab">Day 4<span>8/6</span></button>
+            <button class="tab" data-day="5" role="tab">Day 5<span>8/7</span></button>
+            <button class="tab" data-day="6" role="tab">Day 6<span>8/8</span></button>
+            <button class="tab" data-day="7" role="tab">Day 7<span>8/9</span></button>
+            <button class="tab" data-day="8" role="tab">Day 8<span>8/10</span></button>
         </nav>
 
         <div class="map-wrap">
             <div class="map-card">
+                <div class="map-background" id="mapBackground"></div>
                 <div id="map"></div>
             </div>
         </div>
@@ -434,238 +271,101 @@
                 <p class="sheet-time" id="sheetTime"></p>
                 <h3 class="sheet-title" id="sheetTitle"></h3>
                 <p class="sheet-note" id="sheetNote"></p>
-                <div class="sheet-actions" id="sheetActions"></div>
+                <p class="sheet-cost" id="sheetCost"></p>
             </div>
         </div>
     </div>
 
     <script>
+        const BG = {'1':'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&h=400&fit=crop','2':'https://images.unsplash.com/photo-1475274047050-1d0c0975c63e?w=1200&h=400&fit=crop','3':'https://images.unsplash.com/photo-1475274047050-1d0c0975c63e?w=1200&h=400&fit=crop','4':'https://images.unsplash.com/photo-1475274047050-1d0c0975c63e?w=1200&h=400&fit=crop','5':'https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?w=1200&h=400&fit=crop','6':'https://images.unsplash.com/photo-1532274040911-5f82f1d0c18c?w=1200&h=400&fit=crop','7':'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&h=400&fit=crop','8':'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&h=400&fit=crop'};
+
         const STOPS = {
-            'd1-start': { day: '1', title: '威農山', location: '伊利諾州 (Vernon Hill, IL) - 出發點', time: '08:00', note: '開始你的美國和加拿大史詩級自駕遊冒險！' },
-            'd1-hazleton': { day: '1', title: '假日快捷酒店', location: '黑茲爾頓 (Hazleton, PA 18222)', time: '17:00', note: '第一夜停留。在賓州休息，為紐約做準備！' },
-            
-            'd2-drive-nyc': { day: '2', title: '前往紐約城', location: '賓州 → 紐約州 (Pennsylvania → New York)', time: '08:00-17:00', note: '約6小時車程進入紐約州' },
-            'd2-lotte': { day: '2', title: '樂天宮殿飯店', location: '紐約 (NYC - Midtown Manhattan)', time: '18:00', note: '抵達樂天宮殿飯店。放下行李，探索時代廣場夜景。' },
-            
-            'd3-edge': { day: '3', title: 'Edge 觀景台', location: '紐約市 (Midtown Manhattan)', time: '09:00-11:00', note: '西半球最高的觀景台，360度俯瞰紐約天際線。' },
-            'd3-metmuseum': { day: '3', title: '大都會美術館', location: '上東城 (Upper East Side)', time: '11:30-16:00', note: '世界頂級藝術博物館，展品從埃及到現代。' },
-            'd3-centralpark': { day: '3', title: '💡 中央公園漫步', location: '紐約市 (Central Park)', time: '16:30-17:30', note: '(AI建議)從上東城散步到中央公園，享受傍晚時光和日落景色。' },
-            'd3-lion-king': { day: '3', title: '獅子王百老匯秀', location: '劇院區 (Theater District)', time: '20:00', note: '欣賞世界著名的獅子王音樂劇，必看百老匯經典！' },
-            
-            'd4-broadway': { day: '4', title: '💡 百老匯晨間漫步', location: '時代廣場 (Times Square)', time: '08:00-09:00', note: '(AI建議)早起欣賞時代廣場晨景，拍照紀念。' },
-            'd4-wallstreet': { day: '4', title: '華爾街', location: '金融區 (Financial District)', time: '10:00-11:30', note: '參觀華爾街銅牛、紐約證券交易所。' },
-            'd4-wtc': { day: '4', title: '世貿中心一號 & 觀景台', location: '金融區 (One World Trade Center)', time: '12:00-15:00', note: '登上美國最高摩天大樓，俯瞰下曼哈頓和自由女神像。' },
-            'd4-9-11': { day: '4', title: '💡 9/11紀念館', location: '世貿中心遺址 (9/11 Memorial & Museum)', time: '15:30-17:00', note: '(AI建議)在世貿中心旁邊，感受歷史與紀念。' },
-            'd4-dinner': { day: '4', title: '晚餐', location: '蘇荷區 (Soho)', time: '19:00', note: '(AI建議)在蘇荷區享用世界級餐廳，品嚐各式美食。' },
-            
-            'd5-museum': { day: '5', title: '💡 自然史博物館', location: '上西城 (Upper West Side)', time: '09:00-12:00', note: '(AI建議)紐約另一大博物館，恐龍骨骼和行星展廳必看。' },
-            'd5-brooklyn': { day: '5', title: '💡 布魯克林橋漫步', location: '布魯克林 (Brooklyn Bridge)', time: '13:00-14:30', note: '(AI建議)徒步穿過布魯克林橋，拍攝曼哈頓天際線經典角度。' },
-            'd5-dumbo': { day: '5', title: '💡 DUMBO藝術街區', location: '布魯克林 (DUMBO - Down Under Manhattan Bridge Overpass)', time: '14:30-17:00', note: '(AI建議)紐約最熱門藝術街區，Instagram拍照點、咖啡館、藝術工作室。' },
-            'd5-lotte-night': { day: '5', title: '樂天宮殿飯店', location: '中城曼哈頓 (Midtown Manhattan)', time: '晚上', note: '紐約第五晚，準備明天前往西點' },
-            
-            'd6-westpoint': { day: '6', title: '西點軍校參觀團', location: '紐約州 (West Point, NY)', time: '09:30-13:00', note: '上午10:00開始預約導覽，需提早9:30-9:40抵達。美國重要軍事歷史基地。' },
-            'd6-hudson': { day: '6', title: '💡 哈德遜河風景區', location: '紐約州 (Hudson Valley)', time: '14:00-16:00', note: '(AI建議)從西點返回時，在哈德遜河沿岸享受秋日風光。' },
-            'd6-return-ithaca': { day: '6', title: '前往伊薩卡', location: '紐約州 (West Point → Ithaca)', time: '16:30-20:00', note: '約3.5小時車程前往康奈爾大學' },
-            'd6-stater': { day: '6', title: '思泰特飯店', location: '伊薩卡 (Ithaca, NY - Cornell University)', time: '20:00', note: '抵達思泰特飯店，準備探索康奈爾校園。' },
-            
-            'd7-cornell': { day: '7', title: '康奈爾校園探險', location: '伊薩卡 (Cornell University)', time: '08:00-12:00', note: '參觀美麗的常春藤校園，看建築、圖書館、校園湖景。' },
-            'd7-gorge': { day: '7', title: '伊薩卡峽谷瀑布', location: '伊薩卡 (Ithaca Gorges & Waterfalls)', time: '12:30-16:00', note: '參觀Ithaca Falls和其他壯觀瀑布，自然奇景。' },
-            'd7-commons': { day: '7', title: '💡 康蒙斯廣場晚餐', location: '伊薩卡 (Commons Area)', time: '18:00', note: '(AI建議)在伊薩卡市中心享受當地特色餐廳，大學城氛圍。' },
-            
-            'd8-ithaca-niagara': { day: '8', title: '前往尼亞加拉瀑布', location: '紐約州 → 加拿大 (Ithaca → Niagara Falls)', time: '08:00-15:00', note: '約2.5小時車程進入加拿大' },
-            'd8-sheraton': { day: '8', title: '喜來登瀑布景觀飯店', location: '尼亞加拉瀑布 (Niagara Falls, ON)', time: '16:00', note: '抵達面對瀑布的飯店，震撼的瀑布景色！' },
-            'd8-falls-night': { day: '8', title: '💡 瀑布夜景', location: '尼亞加拉瀑布 (Niagara Falls)', time: '20:00-21:00', note: '(AI建議)欣賞瀑布彩色燈光秀，必看！' },
-            
-            'd9-niagara-london': { day: '9', title: '前往倫敦安大略', location: '加拿大 (Niagara Falls → London)', time: '08:00-14:00', note: '約2小時車程向西前往安大略' },
-            'd9-townplace': { day: '9', title: '城鎮廣場套房飯店', location: '倫敦安大略 (London, Ontario)', time: '15:00', note: '抵達倫敦，探索魅力十足的安大略城市。' },
-            'd9-explore': { day: '9', title: '💡 倫敦市區漫步', location: '倫敦安大略 (Downtown London)', time: '16:00-18:00', note: '(AI建議)逛逛當地市集、咖啡館、博物館。' },
-            
-            'd10-return': { day: '8', title: '返回家鄉', location: '倫敦安大略 → 威農山 (London, ON → Vernon Hill)', time: '08:00', note: '開始返回伊利諾州的旅程（約16小時），完成你的史詩級冒險！' }
+            'd1-start':{day:'1',title:'威農山',location:'伊利諾州 (Vernon Hill)',time:'08:00',note:'開始冒險！',cost:null},
+            'd1-hotel':{day:'1',title:'假日快捷酒店',location:'黑茲爾頓 (Hazleton, PA)',time:'17:00',note:'第一晚',cost:'$117.54 (3間房)'},
+            'd2-nyc':{day:'2',title:'前往紐約',location:'賓州→紐約州',time:'08:00-17:00',note:'6小時車程',cost:null},
+            'd2-hotel':{day:'2',title:'樂天宮殿飯店',location:'紐約 (Midtown)',time:'18:00',note:'紐約住3晚',cost:'$1,150/晚 (3間房)'},
+            'd2-cruise':{day:'2',title:'自由女神郵輪',location:'紐約港',time:'19:30',note:'欣賞夜景',cost:'$122.50'},
+            'd3-edge':{day:'3',title:'Edge觀景台',location:'紐約 (Midtown)',time:'09:00',note:'西半球最高',cost:null},
+            'd3-met':{day:'3',title:'大都會美術館',location:'上東城',time:'11:30-16:00',note:'藝術展品',cost:null},
+            'd3-park':{day:'3',title:'💡中央公園',location:'中央公園',time:'16:30-17:30',note:'(AI建議)日落散步',cost:null},
+            'd3-show':{day:'3',title:'獅子王百老匯',location:'劇院區',time:'20:00',note:'音樂劇',cost:null},
+            'd3-hotel':{day:'3',title:'樂天宮殿',location:'紐約',time:'晚上',note:'',cost:'$1,150/晚 (3間房)'},
+            'd4-walk':{day:'4',title:'💡時代廣場',location:'時代廣場',time:'08:00',note:'(AI建議)晨景',cost:null},
+            'd4-wall':{day:'4',title:'華爾街',location:'金融區',time:'10:00',note:'銅牛、證交所',cost:null},
+            'd4-wtc':{day:'4',title:'世貿中心',location:'金融區',time:'12:00',note:'最高摩天大樓',cost:null},
+            'd4-911':{day:'4',title:'💡9/11紀念',location:'世貿遺址',time:'15:30',note:'(AI建議)歷史紀念',cost:null},
+            'd4-dinner':{day:'4',title:'💡蘇荷晚餐',location:'蘇荷區',time:'19:00',note:'(AI建議)世界美食',cost:null},
+            'd4-hotel':{day:'4',title:'樂天宮殿',location:'紐約',time:'晚上',note:'',cost:'$1,150/晚 (3間房)'},
+            'd5-museum':{day:'5',title:'💡自然史博物館',location:'上西城',time:'09:00',note:'(AI建議)恐龍展',cost:null},
+            'd5-bridge':{day:'5',title:'💡布魯克林橋',location:'布魯克林',time:'13:00',note:'(AI建議)徒步',cost:null},
+            'd5-dumbo':{day:'5',title:'💡DUMBO',location:'布魯克林',time:'14:30',note:'(AI建議)藝術街區',cost:null},
+            'd5-westpoint-prep':{day:'5',title:'前往西點',location:'紐約→西點',time:'17:00',note:'準備明天10AM導覽',cost:null},
+            'd5-stater':{day:'5',title:'思泰特飯店',location:'伊薩卡 (Cornell)',time:'20:00',note:'康奈爾大學',cost:'$1,158 (3間房)'},
+            'd6-westpoint':{day:'6',title:'西點軍校',location:'紐約 (West Point)',time:'09:30-13:00',note:'10AM導覽，9:30到',cost:'$110.24'},
+            'd6-hudson':{day:'6',title:'💡哈德遜河',location:'紐約州',time:'14:00',note:'(AI建議)風景',cost:null},
+            'd6-return':{day:'6',title:'返回伊薩卡',location:'西點→伊薩卡',time:'16:30',note:'3.5小時',cost:null},
+            'd7-cornell':{day:'7',title:'康奈爾校園',location:'伊薩卡',time:'08:00',note:'常春藤校園',cost:null},
+            'd7-gorge':{day:'7',title:'伊薩卡峽谷',location:'伊薩卡',time:'12:30',note:'壯觀瀑布',cost:null},
+            'd7-dinner':{day:'7',title:'💡康蒙斯晚餐',location:'伊薩卡',time:'18:00',note:'(AI建議)當地美食',cost:null},
+            'd7-niagara':{day:'7',title:'前往尼亞加拉',location:'伊薩卡→尼亞加拉',time:'19:00',note:'4小時夜車',cost:null},
+            'd8-sheraton':{day:'8',title:'喜來登瀑布飯店',location:'尼亞加拉 (Fallsview)',time:'23:00',note:'瀑布景色',cost:'$2,208.78 CAD (3間房)'},
+            'd8-light':{day:'8',title:'💡瀑布夜景',location:'尼亞加拉',time:'20:00',note:'(AI建議)燈光秀',cost:null},
+            'd8-london':{day:'8',title:'前往倫敦',location:'尼亞加拉→倫敦',time:'08:00',note:'2小時車程',cost:null},
+            'd8-townplace':{day:'8',title:'城鎮廣場飯店',location:'倫敦 (London)',time:'15:00',note:'安大略',cost:'$499 CAD (3間房)'},
+            'd8-explore':{day:'8',title:'💡倫敦市區',location:'倫敦',time:'16:00',note:'(AI建議)市集咖啡',cost:null}
         };
 
-        const DAY_ORDER = {
-            '1': ['d1-start', 'd1-hazleton'],
-            '2': ['d2-drive-nyc', 'd2-lotte'],
-            '3': ['d3-edge', 'd3-metmuseum', 'd3-centralpark', 'd3-lion-king'],
-            '4': ['d4-broadway', 'd4-wallstreet', 'd4-wtc', 'd4-9-11', 'd4-dinner'],
-            '5': ['d5-museum', 'd5-brooklyn', 'd5-dumbo', 'd5-lotte-night'],
-            '6': ['d6-westpoint', 'd6-hudson', 'd6-return-ithaca', 'd6-stater'],
-            '7': ['d7-cornell', 'd7-gorge', 'd7-commons'],
-            '8': ['d8-ithaca-niagara', 'd8-sheraton', 'd8-falls-night']
-        };
+        const DAYS={1:['d1-start','d1-hotel'],2:['d2-nyc','d2-hotel','d2-cruise'],3:['d3-edge','d3-met','d3-park','d3-show','d3-hotel'],4:['d4-walk','d4-wall','d4-wtc','d4-911','d4-dinner','d4-hotel'],5:['d5-museum','d5-bridge','d5-dumbo','d5-westpoint-prep','d5-stater'],6:['d6-westpoint','d6-hudson','d6-return'],7:['d7-cornell','d7-gorge','d7-dinner','d7-niagara'],8:['d8-sheraton','d8-light','d8-london','d8-townplace','d8-explore']};
+        const AI=['d3-park','d4-walk','d4-911','d4-dinner','d5-museum','d5-bridge','d5-dumbo','d6-hudson','d7-dinner','d8-light','d8-explore'];
+        const WP=[[42.0711,-87.8518],[40.9506,-75.7453],[40.7580,-73.9855],[41.4925,-73.9604],[42.4534,-76.4735],[43.0896,-79.0849],[42.9849,-81.2453],[42.0711,-87.8518]];
 
-        const AI_SUGGESTIONS = [
-            'd3-centralpark',
-            'd4-broadway',
-            'd4-9-11',
-            'd4-dinner',
-            'd5-museum',
-            'd5-brooklyn',
-            'd5-dumbo',
-            'd6-hudson',
-            'd7-commons',
-            'd8-falls-night',
-            'd9-explore'
-        ];
+        let day='1',map,sheet=document.getElementById('sheet'),backdrop=document.getElementById('sheetBackdrop'),done={};
 
-        const ROUTE_WAYPOINTS = [
-            {lat: 42.0711, lng: -87.8518},  // Vernon Hill
-            {lat: 40.9506, lng: -75.7453},  // Hazleton
-            {lat: 40.7580, lng: -73.9855},  // NYC
-            {lat: 41.4925, lng: -73.9604},  // West Point
-            {lat: 42.4534, lng: -76.4735},  // Ithaca
-            {lat: 43.0896, lng: -79.0849},  // Niagara Falls
-            {lat: 42.9849, lng: -81.2453},  // London
-            {lat: 42.0711, lng: -87.8518}   // Return
-        ];
-
-        let currentDay = '1';
-        let lastFocused = null;
-        const sheetEl = document.getElementById('sheet');
-        const backdropEl = document.getElementById('sheetBackdrop');
-        const doneSet = {};
-        let map;
-        let routingControl;
-
-        // Initialize map
-        function initMap() {
-            map = L.map('map').setView([41.5, -78], 5);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
-                maxZoom: 19
-            }).addTo(map);
-
-            // Add driving route using Leaflet Routing Machine
-            const waypoints = ROUTE_WAYPOINTS.map(p => L.latLng(p.lat, p.lng));
-            
-            routingControl = L.Routing.control({
-                waypoints: waypoints,
-                routeWhileDragging: false,
-                createMarker: function(i, wp) {
-                    const colors = ['#c41e3a', '#002868', '#002868', '#002868', '#002868', '#002868', '#002868', '#c41e3a'];
-                    return L.circleMarker(wp.latLng, {
-                        radius: 8,
-                        fillColor: colors[i],
-                        color: '#fff',
-                        weight: 2,
-                        opacity: 1,
-                        fillOpacity: 0.8
-                    });
-                },
-                lineOptions: {
-                    styles: [
-                        { color: '#c41e3a', opacity: 0.7, weight: 3 }
-                    ]
-                }
-            }).addTo(map);
-
-            // Hide routing summary
-            document.querySelectorAll('.leaflet-routing-container').forEach(el => {
-                el.style.display = 'none';
-            });
+        function initMap(){
+            map=L.map('map').setView([41.5,-78],5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+            const wp=WP.map(p=>L.latLng(p[0],p[1]));
+            L.Routing.control({waypoints:wp,routeWhileDragging:false,createMarker:(i,w)=>L.circleMarker(w.latLng,{radius:8,fillColor:i===0||i===7?'#c41e3a':'#002868',color:'#fff',weight:2,opacity:1,fillOpacity:0.8}),lineOptions:{styles:[{color:'#c41e3a',opacity:0.7,weight:3}]}}).addTo(map);
+            document.querySelectorAll('.leaflet-routing-container').forEach(e=>e.style.display='none');
         }
 
-        function buildStopCard(id) {
-            const s = STOPS[id];
-            if (!s) return null;
-            const el = document.createElement('div');
-            el.className = 'stop';
-            if (AI_SUGGESTIONS.includes(id)) {
-                el.classList.add('is-ai-suggestion');
-            }
-            el.tabIndex = 0;
-            el.setAttribute('role', 'button');
-            el.innerHTML = `
-                <time>${s.time}</time>
-                <div class="stop-body">
-                    <h3>${s.title}</h3>
-                    <p>${s.location}</p>
-                </div>
-            `;
-            
-            const chk = document.createElement('button');
-            chk.className = 'check-btn';
-            chk.type = 'button';
-            chk.setAttribute('aria-label', '標記為完成');
-            chk.textContent = '✓';
-            chk.addEventListener('click', (e) => {
-                e.stopPropagation();
-                el.classList.toggle('is-done');
-                doneSet[id] = !doneSet[id];
-            });
-            el.appendChild(chk);
-            
-            el.addEventListener('click', () => openStopCard(id, el));
-            el.addEventListener('keydown', (e) => {
-                if ((e.key === 'Enter' || e.key === ' ') && e.target === el) {
-                    e.preventDefault();
-                    openStopCard(id, el);
-                }
-            });
+        function card(id){
+            const s=STOPS[id];if(!s)return null;
+            const el=document.createElement('div');el.className='stop';if(AI.includes(id))el.classList.add('is-ai-suggestion');
+            el.innerHTML=`<time>${s.time}</time><div class="stop-body"><h3>${s.title}</h3><p>${s.location}</p></div>`;
+            const btn=document.createElement('button');btn.className='check-btn';btn.type='button';btn.textContent='✓';
+            btn.onclick=(e)=>{e.stopPropagation();el.classList.toggle('is-done');done[id]=!done[id];};
+            el.appendChild(btn);
+            el.onclick=()=>open(id,el);
+            el.onkeydown=(e)=>{if((e.key==='Enter'||e.key===' ')&&e.target===el){e.preventDefault();open(id,el);}};
             return el;
         }
 
-        function renderTimeline() {
-            Object.keys(DAY_ORDER).forEach((day) => {
-                const panel = document.querySelector(`.day-panel[data-panel="${day}"]`);
-                if (!panel) return;
-                panel.innerHTML = '';
-                DAY_ORDER[day].forEach((id) => {
-                    const card = buildStopCard(id);
-                    if (card) panel.appendChild(card);
-                });
-            });
+        function render(){Object.keys(DAYS).forEach(d=>{const p=document.querySelector(`.day-panel[data-panel="${d}"]`);if(p){p.innerHTML='';DAYS[d].forEach(id=>{const c=card(id);if(c)p.appendChild(c);});}});}
+
+        function open(id,el){
+            const s=STOPS[id];if(!s)return;
+            document.getElementById('sheetTime').textContent=s.time||'';
+            document.getElementById('sheetTitle').textContent=s.title;
+            document.getElementById('sheetNote').innerHTML=s.note||'';
+            const c=document.getElementById('sheetCost');
+            if(s.cost){c.textContent='💰 '+s.cost;c.style.display='block';}else c.style.display='none';
+            sheet.classList.add('is-open');backdrop.classList.add('is-open');sheet.setAttribute('aria-hidden','false');
         }
 
-        function openStopCard(id, triggerEl) {
-            const s = STOPS[id];
-            if (!s) return;
-            lastFocused = triggerEl || document.activeElement;
-            
-            document.getElementById('sheetTime').textContent = s.time || '';
-            document.getElementById('sheetTitle').textContent = s.title;
-            document.getElementById('sheetNote').innerHTML = s.note || '';
-            
-            sheetEl.classList.add('is-open');
-            backdropEl.classList.add('is-open');
-            sheetEl.setAttribute('aria-hidden', 'false');
-            document.getElementById('sheetClose').focus();
+        function close(){sheet.classList.remove('is-open');backdrop.classList.remove('is-open');sheet.setAttribute('aria-hidden','true');}
+
+        function setDay(d){
+            day=d;document.getElementById('mapBackground').style.backgroundImage=`url('${BG[d]}')`;
+            document.querySelectorAll('.tab').forEach(t=>{const a=t.getAttribute('data-day')===d;t.classList.toggle('is-active',a);});
+            document.querySelectorAll('.day-panel').forEach(p=>p.classList.toggle('is-active',p.getAttribute('data-panel')===d));
         }
 
-        function closeStopCard() {
-            sheetEl.classList.remove('is-open');
-            backdropEl.classList.remove('is-open');
-            sheetEl.setAttribute('aria-hidden', 'true');
-            if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
-        }
+        document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>setDay(t.getAttribute('data-day')));
+        backdrop.onclick=close;document.getElementById('sheetClose').onclick=close;
+        document.onkeydown=(e)=>{if(e.key==='Escape')close();};
 
-        function setDay(day) {
-            currentDay = day;
-            document.querySelectorAll('.tab').forEach((t) => {
-                const active = t.getAttribute('data-day') === day;
-                t.classList.toggle('is-active', active);
-                t.setAttribute('aria-selected', active ? 'true' : 'false');
-            });
-            document.querySelectorAll('.day-panel').forEach((p) => {
-                p.classList.toggle('is-active', p.getAttribute('data-panel') === day);
-            });
-        }
-
-        // Event listeners
-        document.querySelectorAll('.tab').forEach((t) => {
-            t.addEventListener('click', () => setDay(t.getAttribute('data-day')));
-        });
-
-        backdropEl.addEventListener('click', closeStopCard);
-        document.getElementById('sheetClose').addEventListener('click', closeStopCard);
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeStopCard();
-        });
-
-        // Initialize
-        renderTimeline();
-        setDay('1');
-        initMap();
+        render();setDay('1');initMap();
     </script>
 </body>
 </html>
