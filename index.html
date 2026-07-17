@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USA & Canada Road Trip 2026</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            gap: 0;
+        }
+
+        .sidebar {
+            width: 380px;
+            background: white;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .trip-info {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .trip-info strong {
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stop {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stop:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            transform: translateX(5px);
+        }
+
+        .stop.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .stop-date {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .stop-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .stop-location {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .stop-image {
+            width: 100%;
+            height: 120px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            object-fit: cover;
+        }
+
+        .stop-details {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .stop-details p {
+            margin-bottom: 5px;
+        }
+
+        .distance {
+            background: #f0f0f0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .route-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 20px;
+            color: #999;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 40%;
+                border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .map-container {
+                flex: 1;
+            }
+        }
+
+        /* Scrollbar styling */
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        .legend {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        .legend-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="header">
+                <h1>🚗 USA & Canada Road Trip</h1>
+                <p>August 3-10, 2026</p>
+            </div>
+
+            <div class="trip-info">
+                <strong>📍 Starting Point:</strong>
+                Vernon Hill, IL<br>
+                <strong>📅 Dates:</strong>
+                Aug 3 - Aug 10, 2026<br>
+                <strong>🛣️ Route:</strong>
+                Interstate 80<br>
+                <strong>🚗 Distance:</strong>
+                ~1,800 miles
+            </div>
+
+            <div id="stops-container"></div>
+
+            <div class="legend">
+                <div class="legend-title">Trip Highlights</div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #667eea;"></span>
+                    <span>Hotel Stops</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #764ba2;"></span>
+                    <span>Route Path</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <script>
+        // Trip data
+        const tripData = [
+            {
+                id: 1,
+                date: "Aug 3",
+                title: "Starting Point",
+                location: "Vernon Hill, IL",
+                hotel: "Hotel Details: TBD",
+                description: "Begin your adventure through the heartland.",
+                image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=500&h=300&fit=crop",
+                lat: 42.0711,
+                lng: -87.8518,
+                distance: "—"
+            },
+            {
+                id: 2,
+                date: "Aug 3",
+                title: "Holiday Inn Express",
+                location: "Hazleton, PA 18222",
+                hotel: "Holiday Inn Express Drum-Hazleton",
+                description: "First night stop in Pennsylvania. Rest and prepare for NYC.",
+                image: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=500&h=300&fit=crop",
+                lat: 40.9506,
+                lng: -75.7453,
+                distance: "~550 miles from start"
+            },
+            {
+                id: 3,
+                date: "Aug 4-6",
+                title: "Lotte Palace",
+                location: "New York City, NY",
+                hotel: "Lotte Palace (Midtown Manhattan)",
+                description: "3 nights exploring the iconic Big Apple. Visit Times Square, Central Park, Statue of Liberty, and iconic NYC landmarks.",
+                image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=500&h=300&fit=crop",
+                lat: 40.7580,
+                lng: -73.9855,
+                distance: "~200 miles from Hazleton"
+            },
+            {
+                id: 4,
+                date: "Aug 7",
+                title: "Stater Hotel",
+                location: "Ithaca, NY (Cornell University)",
+                hotel: "Stater Hotel at Cornell University",
+                description: "Journey to upstate New York. Explore the beautiful Cornell campus and Ithaca's gorges and waterfalls.",
+                image: "https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?w=500&h=300&fit=crop",
+                lat: 42.4534,
+                lng: -76.4735,
+                distance: "~250 miles from NYC"
+            },
+            {
+                id: 5,
+                date: "Aug 8",
+                title: "Sheraton Fallsview",
+                location: "Niagara Falls, ON, Canada",
+                hotel: "Sheraton Fallsview Hotel",
+                description: "Cross into Canada and experience the majestic Niagara Falls. Spectacular views and adventure activities.",
+                image: "https://images.unsplash.com/photo-1532274040911-5f82f1d0c18c?w=500&h=300&fit=crop",
+                lat: 43.0896,
+                lng: -79.0849,
+                distance: "~70 miles from Ithaca"
+            },
+            {
+                id: 6,
+                date: "Aug 9",
+                title: "TownePlace Suites",
+                location: "London, Ontario, Canada",
+                hotel: "TownePlace Suites by Marriott London",
+                description: "Continue west into Ontario. Explore the charming city of London and prepare for the return journey.",
+                image: "https://images.unsplash.com/photo-1519456590522-46c69acd42fe?w=500&h=300&fit=crop",
+                lat: 42.9849,
+                lng: -81.2453,
+                distance: "~150 miles from Niagara Falls"
+            },
+            {
+                id: 7,
+                date: "Aug 10",
+                title: "Return Home",
+                location: "Vernon Hill, IL",
+                hotel: "Complete the Circle",
+                description: "Drive back to Illinois, completing your epic USA & Canada adventure.",
+                image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=500&h=300&fit=crop",
+                lat: 42.0711,
+                lng: -87.8518,
+                distance: "~1,000 miles to return"
+            }
+        ];
+
+        // Initialize map
+        const map = L.map('map').setView([41.5, -78], 6);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Draw route
+        const routeCoordinates = tripData.map(stop => [stop.lat, stop.lng]);
+        L.polyline(routeCoordinates, {
+            color: '#764ba2',
+            weight: 3,
+            opacity: 0.7,
+            dashArray: '5, 5'
+        }).addTo(map);
+
+        // Add markers
+        const markers = {};
+        tripData.forEach((stop, index) => {
+            const marker = L.circleMarker([stop.lat, stop.lng], {
+                radius: 8,
+                fillColor: '#667eea',
+                color: '#fff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map);
+
+            marker.bindPopup(`<strong>${stop.title}</strong><br>${stop.location}<br>${stop.date}`);
+            markers[stop.id] = marker;
+
+            marker.on('click', () => {
+                highlightStop(stop.id);
+                map.setView([stop.lat, stop.lng], 10);
+            });
+        });
+
+        // Render stops in sidebar
+        const stopsContainer = document.getElementById('stops-container');
+        tripData.forEach(stop => {
+            const stopEl = document.createElement('div');
+            stopEl.className = 'stop';
+            stopEl.id = `stop-${stop.id}`;
+            stopEl.innerHTML = `
+                <div class="stop-date">${stop.date}</div>
+                <div class="stop-title">${stop.title}</div>
+                <div class="stop-location">📍 ${stop.location}</div>
+                <img src="${stop.image}" alt="${stop.title}" class="stop-image">
+                <div class="stop-details">
+                    <p><strong>Hotel:</strong> ${stop.hotel}</p>
+                    <p>${stop.description}</p>
+                    <p class="distance">${stop.distance}</p>
+                </div>
+            `;
+
+            stopEl.addEventListener('click', () => {
+                highlightStop(stop.id);
+                map.setView([stop.lat, stop.lng], 10);
+            });
+
+            stopsContainer.appendChild(stopEl);
+
+            if (index < tripData.length - 1) {
+                const routeLine = document.createElement('div');
+                routeLine.className = 'route-line';
+                routeLine.textContent = '↓';
+                stopsContainer.appendChild(routeLine);
+            }
+        });
+
+        // Highlight function
+        function highlightStop(stopId) {
+            document.querySelectorAll('.stop').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(`stop-${stopId}`).classList.add('active');
+
+            Object.values(markers).forEach(marker => {
+                marker.setRadius(8);
+                marker.setStyle({ fillColor: '#667eea' });
+            });
+
+            if (markers[stopId]) {
+                markers[stopId].setRadius(12);
+                markers[stopId].setStyle({ fillColor: '#764ba2' });
+            }
+        }
+
+        // Auto-highlight first stop
+        highlightStop(1);
+    </script>
+</body>
+</html>
