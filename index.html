@@ -277,14 +277,14 @@
     </div>
 
     <script>
-        const BG = {'1':'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&h=400&fit=crop','2':'https://images.unsplash.com/photo-1475274047050-1d0c0975c63e?w=1200&h=400&fit=crop','3':'https://images.unsplash.com/photo-1475274047050-1d0c0975c63e?w=1200&h=400&fit=crop','4':'https://images.unsplash.com/photo-1475274047050-1d0c0975c63e?w=1200&h=400&fit=crop','5':'https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?w=1200&h=400&fit=crop','6':'https://images.unsplash.com/photo-1532274040911-5f82f1d0c18c?w=1200&h=400&fit=crop','7':'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&h=400&fit=crop','8':'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&h=400&fit=crop'};
+        const BG = {'1':'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&h=400&fit=crop','2':'https://images.unsplash.com/photo-1475274047050-1d0c0975c63e?w=1200&h=400&fit=crop','3':'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1200&h=400&fit=crop','4':'https://images.unsplash.com/photo-1489749798305-4fea3ba63d60?w=1200&h=400&fit=crop','5':'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop','6':'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop','7':'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop','8':'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop'};
 
         const STOPS = {
             'd1-start':{day:'1',title:'威農山',location:'伊利諾州 (Vernon Hill)',time:'08:00',note:'開始冒險！',cost:null},
             'd1-hotel':{day:'1',title:'假日快捷酒店',location:'黑茲爾頓 (Hazleton, PA)',time:'17:00',note:'第一晚',cost:'$117.54 (3間房)'},
             'd2-nyc':{day:'2',title:'前往紐約',location:'賓州→紐約州',time:'08:00-17:00',note:'6小時車程',cost:null},
             'd2-hotel':{day:'2',title:'樂天宮殿飯店',location:'紐約 (Midtown)',time:'18:00',note:'紐約住3晚',cost:'$1,150/晚 (3間房)'},
-            'd2-cruise':{day:'2',title:'自由女神郵輪',location:'紐約港',time:'19:30',note:'欣賞夜景',cost:'$122.50'},
+            'd2-cruise':{day:'2',title:'自由女神郵輪',location:'紐約港',time:'10:30',note:'欣賞景色',cost:'$122.50'},
             'd3-edge':{day:'3',title:'Edge觀景台',location:'紐約 (Midtown)',time:'09:00',note:'西半球最高',cost:null},
             'd3-met':{day:'3',title:'大都會美術館',location:'上東城',time:'11:30-16:00',note:'藝術展品',cost:null},
             'd3-park':{day:'3',title:'💡中央公園',location:'中央公園',time:'16:30-17:30',note:'(AI建議)日落散步',cost:null},
@@ -301,7 +301,7 @@
             'd5-dumbo':{day:'5',title:'💡DUMBO',location:'布魯克林',time:'14:30',note:'(AI建議)藝術街區',cost:null},
             'd5-westpoint-prep':{day:'5',title:'前往西點',location:'紐約→西點',time:'17:00',note:'準備明天10AM導覽',cost:null},
             'd5-stater':{day:'5',title:'思泰特飯店',location:'伊薩卡 (Cornell)',time:'20:00',note:'康奈爾大學',cost:'$1,158 (3間房)'},
-            'd6-westpoint':{day:'6',title:'西點軍校',location:'紐約 (West Point)',time:'09:30-13:00',note:'10AM導覽，9:30到',cost:'$110.24'},
+            'd6-westpoint':{day:'6',title:'西點軍校',location:'紐約 (West Point)',time:'10:00-13:00',note:'10AM導覽',cost:'$110.24'},
             'd6-hudson':{day:'6',title:'💡哈德遜河',location:'紐約州',time:'14:00',note:'(AI建議)風景',cost:null},
             'd6-return':{day:'6',title:'返回伊薩卡',location:'西點→伊薩卡',time:'16:30',note:'3.5小時',cost:null},
             'd7-cornell':{day:'7',title:'康奈爾校園',location:'伊薩卡',time:'08:00',note:'常春藤校園',cost:null},
@@ -325,7 +325,7 @@
             map=L.map('map').setView([41.5,-78],5);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
             const wp=WP.map(p=>L.latLng(p[0],p[1]));
-            L.Routing.control({waypoints:wp,routeWhileDragging:false,createMarker:(i,w)=>L.circleMarker(w.latLng,{radius:8,fillColor:i===0||i===7?'#c41e3a':'#002868',color:'#fff',weight:2,opacity:1,fillOpacity:0.8}),lineOptions:{styles:[{color:'#c41e3a',opacity:0.7,weight:3}]}}).addTo(map);
+            L.Routing.control({waypoints:wp,routeWhileDragging:false,createMarker:(i,w)=>L.circleMarker(w.latLng,{radius:8,fillColor:i===0||i===7?'#c41e3a':'#002868',color:'#fff',weight:2,opacity:1})}).addTo(map);
             document.querySelectorAll('.leaflet-routing-container').forEach(e=>e.style.display='none');
         }
 
@@ -341,7 +341,7 @@
             return el;
         }
 
-        function render(){Object.keys(DAYS).forEach(d=>{const p=document.querySelector(`.day-panel[data-panel="${d}"]`);if(p){p.innerHTML='';DAYS[d].forEach(id=>{const c=card(id);if(c)p.appendChild(c);});}});}
+        function render(){Object.keys(DAYS).forEach(d=>{const p=document.querySelector(`.day-panel[data-panel="${d}"]`);if(p){p.innerHTML='';DAYS[d].forEach(id=>{const c=card(id);if(c)p.appendChild(c);})}});}
 
         function open(id,el){
             const s=STOPS[id];if(!s)return;
