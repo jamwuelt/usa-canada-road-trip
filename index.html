@@ -32,7 +32,7 @@
         .eyebrow {
             margin: 0 0 6px;
             font-family: var(--font-display);
-            font-size: 12.5px;
+            font-size: 13.5px;
             font-weight: 700;
             letter-spacing: 0.14em;
             text-transform: uppercase;
@@ -43,11 +43,11 @@
             margin: 0 0 8px;
             font-family: var(--font-display);
             font-weight: 800;
-            font-size: clamp(26px, 6vw, 34px);
+            font-size: clamp(27px, 6vw, 35px);
             color: var(--blue);
         }
 
-        .sub { margin: 0; font-size: 14.5px; color: var(--ink-soft); }
+        .sub { margin: 0; font-size: 15.5px; color: var(--ink-soft); }
 
         .day-tabs {
             display: flex;
@@ -67,7 +67,7 @@
             flex: 0 0 auto;
             font-family: var(--font-display);
             font-weight: 700;
-            font-size: 14px;
+            font-size: 15px;
             border: none;
             border-radius: 999px;
             padding: 9px 16px;
@@ -81,7 +81,7 @@
             transition: background 0.15s ease;
         }
 
-        .tab span { font-size: 10.5px; font-weight: 600; opacity: 0.75; }
+        .tab span { font-size: 11.5px; font-weight: 600; opacity: 0.75; }
         .tab.is-active { color: #fff; background: var(--red); }
 
         .map-wrap { padding: 4px 12px 8px; }
@@ -136,7 +136,7 @@
             position: absolute;
             top: 8px;
             right: 40px;
-            font-size: 10px;
+            font-size: 11px;
             background: #fff3cd;
             color: #856404;
             padding: 2px 6px;
@@ -145,9 +145,9 @@
         }
 
         .stop:hover { box-shadow: 0 2px 8px rgba(196, 30, 58, 0.1); border-color: var(--red); }
-        .stop time { font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--blue); line-height: 1.35; }
-        .stop-body h3 { margin: 0 0 3px; font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--ink); }
-        .stop-body p { margin: 0; font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+        .stop time { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--blue); line-height: 1.35; }
+        .stop-body h3 { margin: 0 0 3px; font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--ink); }
+        .stop-body p { margin: 0; font-size: 14px; color: var(--ink-soft); line-height: 1.5; }
 
         .check-btn {
             width: 26px;
@@ -163,7 +163,7 @@
             justify-content: center;
             padding: 0;
             color: transparent;
-            font-size: 14px;
+            font-size: 15px;
             line-height: 1;
             transition: all 0.15s ease;
         }
@@ -217,10 +217,10 @@
         .sheet-inner { display: flex; gap: 14px; padding-top: 10px; }
         .sheet-accent { width: 5px; border-radius: 99px; flex: 0 0 auto; background: var(--red); }
         .sheet-content { min-width: 0; flex: 1; }
-        .sheet-time { margin: 0 0 2px; font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--blue); }
-        .sheet-title { margin: 0 0 8px; font-family: var(--font-display); font-weight: 800; font-size: 19px; color: var(--ink); }
-        .sheet-note { margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink); }
-        .sheet-cost { margin: 10px 0 0 0; padding-top: 10px; border-top: 1px solid #e0e0e0; font-size: 14px; font-weight: 600; color: var(--red); }
+        .sheet-time { margin: 0 0 2px; font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--blue); }
+        .sheet-title { margin: 0 0 8px; font-family: var(--font-display); font-weight: 800; font-size: 20px; color: var(--ink); }
+        .sheet-note { margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink); }
+        .sheet-cost { margin: 10px 0 0 0; padding-top: 10px; border-top: 1px solid #e0e0e0; font-size: 15px; font-weight: 600; color: var(--red); }
     </style>
 </head>
 <body>
@@ -281,7 +281,7 @@
 
         const STOPS = {
             'd1-start':{day:'1',title:'威農山',location:'伊利諾州 (Vernon Hill)',time:'08:00',note:'開始冒險！',cost:null},
-            'd1-hotel':{day:'1',title:'假日快捷酒店',location:'黑茲爾頓 (Hazleton, PA)',time:'17:00',note:'第一晚',cost:'$117.54 (3間房)'},
+            'd1-hotel':{day:'1',title:'假日快捷酒店',location:'黑茲爾頓 (Hazleton, PA)',time:'17:00',note:'第一晚',cost:'$352.62 (3間房)'},
             'd2-nyc':{day:'2',title:'前往紐約',location:'賓州→紐約州',time:'08:00-17:00',note:'6小時車程',cost:null},
             'd2-hotel':{day:'2',title:'樂天宮殿飯店',location:'紐約 (Midtown)',time:'18:00',note:'紐約住3晚',cost:'$1,150/晚 (3間房)'},
             'd2-cruise':{day:'2',title:'自由女神郵輪',location:'紐約港',time:'10:30',note:'欣賞景色',cost:'$122.50'},
